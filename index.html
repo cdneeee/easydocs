@@ -3,7 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EasyDocs</title>
+<title>EasyDocs — browser documentation editor</title>
+<meta name="description" content="A lightweight documentation creator that runs entirely in your browser. Write pages and blocks, annotate screenshots with numbered pins, and export a self-contained HTML file or a PDF. No install, no server, nothing leaves your machine.">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="EasyDocs — browser documentation editor">
+<meta property="og:description" content="Write docs, annotate screenshots with numbered pins, export to HTML or PDF. Runs fully in your browser — no install, no server.">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M20 20h24M20 31h24M20 42h14' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/app.css">
 </head>
@@ -36,6 +42,7 @@
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M4 12h16"/></symbol>
   <symbol id="i-md" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 15V9l2.5 3L10 9v6M15.5 9v6M13 12.8l2.5 2.5 2.5-2.5"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-grip" viewBox="0 0 24 24"><path d="M9 6h.01M9 12h.01M9 18h.01M15 6h.01M15 12h.01M15 18h.01"/></symbol>
 </svg>
 
 <div id="home" class="screen">
@@ -51,6 +58,11 @@
     </div>
   </header>
   <main class="home-main">
+    <div id="backupNote" class="backup-note" hidden>
+      <svg class="ic"><use href="#i-warn"/></svg>
+      <span>Heads up: your work lives only in this browser and can be lost if you clear site data. When a document is done, use <b>Save .json</b> in the editor to keep a backup.</span>
+      <button class="icon-btn" id="backupNoteX" title="Dismiss"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
     <div id="docGrid" class="doc-grid"></div>
     <div id="homeEmpty" class="home-empty" hidden>
       <p>No documents yet.</p>
@@ -103,6 +115,7 @@
 </div>
 
 <div id="blockMenu" hidden></div>
+<div id="slashMenu" hidden></div>
 
 <div class="modal-back" id="annoModal" hidden>
   <div class="modal annotator">
@@ -219,6 +232,7 @@
 <script src="js/sample.js"></script>
 <script src="js/pdf.js"></script>
 <script src="js/blocks.js"></script>
+<script src="js/compose.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/refs.js"></script>
 <script src="js/home.js"></script>

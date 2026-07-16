@@ -66,6 +66,7 @@ function renderAnnoPins() {
 
 function annoPinEl(a, i) {
   var pin = el('span', 'pin big' + (annoState.selId === a.id ? ' sel' : ''), String(i + 1));
+  pin.dataset.id = a.id;
   pin.style.left = a.x + '%';
   pin.style.top = a.y + '%';
   applyPinSize(pin, annoState.pinSize);
@@ -214,6 +215,10 @@ function initAnnotator() {
     renderAnnoPins();
     renderAnnoList();
     selectAnno(a.id, true);
+    if (!reduceMotion) {
+      var np = $('#annoPins .pin[data-id="' + a.id + '"]');
+      if (np) np.classList.add('pin-drop');
+    }
   });
 
   $('#annoDone').addEventListener('click', function () {

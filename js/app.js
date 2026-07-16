@@ -830,6 +830,7 @@ window.addEventListener('DOMContentLoaded', function () {
     initPaste();
     initDrop();
     initKeys();
+    initBlockDrag();
 
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'hidden' && Store.project) persistNow();
@@ -840,7 +841,8 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     DB.all().then(function (docs) {
-      if (!docs.length) {
+      var hasExample = docs.some(function (d) { return d.example; });
+      if (!hasExample) {
         return DB.put(sampleProject()).catch(function () {});
       }
     }).then(function () {

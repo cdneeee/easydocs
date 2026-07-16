@@ -86,7 +86,7 @@ function sampleProject() {
   var pageWelcome = {
     id: welcomeId, title: 'Welcome', blocks: [
       { id: uid(), type: 'paragraph', html: 'EasyDocs is a small documentation editor that runs in your browser. You write in pages and blocks, drop in screenshots, tag spots on them with numbered pins, and reference those pins from your text. The result exports as a single HTML file or a PDF.' },
-      { id: uid(), type: 'callout', kind: 'tip', html: 'This sample document is also the user guide. Keep it around while you learn the editor, or delete it from the home screen whenever you want. You can bring it back with the Add the sample guide button.' },
+      { id: uid(), type: 'callout', kind: 'tip', html: 'This sample document is also the user guide. It stays on your home screen as a reference and cannot be deleted. Create your own documents alongside it with New document.' },
       { id: uid(), type: 'heading', level: 2, text: 'Quick start' },
       {
         id: uid(), type: 'list', ordered: true, html:
@@ -229,6 +229,7 @@ function sampleProject() {
   return {
     id: uid(),
     fmt: 2,
+    example: true,
     title: 'EasyDocs Guide',
     subtitle: 'A short tour of the editor, written in the editor',
     author: 'EasyDocs',

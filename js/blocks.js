@@ -58,6 +58,7 @@ function renderBlock(b) {
   renderers[b.type](b, body);
 
   var ctr = el('div', 'b-ctr');
+  addGripHandle(wrap, ctr);
   addTypeTag(b, ctr);
   ctrBtn(ctr, 'up', 'Move up', function () { moveBlock(b.id, -1); });
   ctrBtn(ctr, 'down', 'Move down', function () { moveBlock(b.id, 1); });
@@ -112,6 +113,7 @@ function bodyParagraph(b, body) {
       if (page && page.blocks.length > 1) { e.preventDefault(); removeBlockSilent(b.id); }
     }
   });
+  attachComposer(ed, b);
   body.appendChild(ed);
 }
 
@@ -132,6 +134,19 @@ function bodyList(b, body) {
   list.contentEditable = 'true';
   list.innerHTML = b.html || '<li></li>';
   list.addEventListener('input', function () { b.html = list.innerHTML; queueSave(); });
+  list.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    var sel = window.getSelection();
+    var node = sel && sel.anchorNode;
+    var li = node ? (node.nodeType === 1 ? node : node.parentNode).closest('li') : null;
+    if (li && !li.textContent.trim() && list.children.length > 1 && li === list.lastElementChild) {
+      e.preventDefault();
+      li.remove();
+      b.html = list.innerHTML;
+      var np = addBlock('paragraph', b.id);
+      flashNew(np.id);
+    }
+  });
   body.appendChild(list);
 }
 
