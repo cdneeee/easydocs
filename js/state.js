@@ -84,6 +84,11 @@ var Store = {
     return this.project.pages.find(function (p) { return p.id === pid; }) || null;
   },
 
+  childrenOf: function (pageId) {
+    if (!this.project) return [];
+    return this.project.pages.filter(function (p) { return p.parentId === pageId; });
+  },
+
   pageOf: function (blockId) {
     if (!this.project) return null;
     return this.project.pages.find(function (p) {
@@ -162,6 +167,7 @@ function persistNow() {
 function defaultProject(title) {
   return {
     id: uid(),
+    fmt: 2,
     title: title || 'Untitled document',
     subtitle: '',
     author: '',
@@ -177,6 +183,54 @@ function defaultProject(title) {
       blocks: [{ id: uid(), type: 'paragraph', html: '' }]
     }]
   };
+}
+
+/* Keeps the pages array in document order: pages, then their sections,
+   then each section's subsections, depth first. Nesting is capped at two
+   levels below a page; anything with a missing parent, a cycle, or deeper
+   nesting is promoted to a top-level page. */
+function normalizePageOrder(project) {
+  var pages = project.pages || [];
+  var byId = {};
+  pages.forEach(function (p) { byId[p.id] = p; });
+  pages.forEach(function (p) {
+    if (p.kind === 'group') p.parentId = null;
+  });
+  var out = [];
+
+  function place(p, level) {
+    if (out.indexOf(p) > -1) return;
+    out.push(p);
+    if (p.kind !== 'group' && level >= 2) return;
+    var childLevel = p.kind === 'group' ? 0 : level + 1;
+    pages.forEach(function (c) {
+      if (c.parentId === p.id) place(c, childLevel);
+    });
+  }
+
+  pages.forEach(function (p) {
+    if (!p.parentId || !byId[p.parentId]) {
+      if (p.parentId) p.parentId = null;
+      place(p, 0);
+    }
+  });
+  pages.forEach(function (p) {
+    if (out.indexOf(p) < 0) { p.parentId = null; out.push(p); }
+  });
+  project.pages = out;
+}
+
+/* Documents from before format 2 stored group membership by position:
+   pages after a group label belonged to it. Format 2 stores it explicitly
+   through parentId. Runs once per document. */
+function migrateGroupMembership(project) {
+  if (project.fmt >= 2) return;
+  var curGroup = null;
+  (project.pages || []).forEach(function (p) {
+    if (p.kind === 'group') { curGroup = p; return; }
+    if (!p.parentId && curGroup) p.parentId = curGroup.id;
+  });
+  project.fmt = 2;
 }
 
 /* Basic shape check for imported .json files. */

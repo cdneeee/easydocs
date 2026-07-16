@@ -272,9 +272,18 @@ function renderLegend(b) {
   var ol = el('ol', 'legend');
   (b.annotations || []).forEach(function (a, i) {
     var li = el('li');
-    li.innerHTML = '<span class="ln">' + (i + 1) + '</span><span class="lt"><b>' +
-      escapeHtml(a.name || 'Pin ' + (i + 1)) + '</b>' +
-      (a.desc ? ' <span class="ld">' + escapeHtml(a.desc) + '</span>' : '') + '</span>';
+    li.appendChild(el('span', 'ln', String(i + 1)));
+    var lt = el('span', 'lt');
+    var nm = el('b', '', escapeHtml(a.name || 'Pin ' + (i + 1)));
+    var target = a.pageId && Store.project.pages.find(function (p) { return p.id === a.pageId; });
+    if (target) {
+      nm.className = 'lgo';
+      nm.title = 'Go to "' + (target.title || 'Untitled') + '"';
+      nm.addEventListener('click', function () { switchPage(target.id); });
+    }
+    lt.appendChild(nm);
+    if (a.desc) lt.insertAdjacentHTML('beforeend', ' <span class="ld">' + escapeHtml(a.desc) + '</span>');
+    li.appendChild(lt);
     ol.appendChild(li);
   });
   return ol;

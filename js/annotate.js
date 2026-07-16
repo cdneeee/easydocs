@@ -1,4 +1,4 @@
-/* EasyDocs: the screenshot annotator. Works on a copy of the pins and
+﻿/* EasyDocs: the screenshot annotator. Works on a copy of the pins and
    commits them on Done, so Cancel loses nothing. */
 
 var annoState = null;
@@ -70,6 +70,24 @@ function selectAnno(id, focusName) {
   }
 }
 
+/* Options for the pin link picker: every page, section, and subsection,
+   indented by depth. */
+function pageOptionsHtml(selected) {
+  var out = '<option value="">No link, text only</option>';
+  var depths = {};
+  var byId = {};
+  Store.project.pages.forEach(function (pg) { byId[pg.id] = pg; });
+  Store.project.pages.forEach(function (pg) {
+    if (pg.kind === 'group') return;
+    var par = pg.parentId ? byId[pg.parentId] : null;
+    depths[pg.id] = par && par.kind !== 'group' ? (depths[par.id] || 0) + 1 : 0;
+    var pad = new Array(Math.min(depths[pg.id], 2) + 1).join('  ');
+    out += '<option value="' + pg.id + '"' + (selected === pg.id ? ' selected' : '') + '>' +
+      pad + escapeHtml(pg.title || 'Untitled') + '</option>';
+  });
+  return out;
+}
+
 function renderAnnoList() {
   var host = $('#annoList');
   host.innerHTML = '';
@@ -88,8 +106,15 @@ function renderAnnoList() {
     desc.placeholder = 'Description (optional)';
     desc.value = a.desc || '';
     desc.addEventListener('input', function () { a.desc = desc.value; });
+    var link = el('select', 'a-link', pageOptionsHtml(a.pageId || ''));
+    link.title = 'Readers can jump there from the figure legend';
+    link.addEventListener('change', function () {
+      if (link.value) a.pageId = link.value;
+      else delete a.pageId;
+    });
     fields.appendChild(name);
     fields.appendChild(desc);
+    fields.appendChild(link);
 
     var del = el('button', 'icon-btn a-del', icon('trash'));
     del.title = 'Delete this pin';

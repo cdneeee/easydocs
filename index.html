@@ -35,6 +35,7 @@
   <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M4 12h16"/></symbol>
   <symbol id="i-md" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 15V9l2.5 3L10 9v6M15.5 9v6M13 12.8l2.5 2.5 2.5-2.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
 </svg>
 
 <div id="home" class="screen">
@@ -65,6 +66,11 @@
     <button class="doc-title" id="docTitle" title="Document settings"></button>
     <span class="save-state" id="saveState"></span>
     <span class="grow"></span>
+    <div class="zoom-ctl" title="Editor zoom">
+      <button class="icon-btn" id="zoomOut" title="Reduce zoom"><svg class="ic"><use href="#i-minus"/></svg></button>
+      <button class="zoom-val" id="zoomReset" title="Reset zoom to 100 percent">100%</button>
+      <button class="icon-btn" id="zoomIn" title="Increase zoom"><svg class="ic"><use href="#i-plus"/></svg></button>
+    </div>
     <button class="icon-btn" id="btnSettings" title="Document settings"><svg class="ic"><use href="#i-gear"/></svg></button>
     <button class="btn" id="btnSaveJson" title="Download a backup file of this document">Save .json</button>
     <button class="btn" id="btnPreview" title="Open the exported document in a new tab">Preview</button>
@@ -76,6 +82,7 @@
       <div class="side-label">Pages</div>
       <ul id="pageList"></ul>
       <button class="btn ghost" id="btnAddPage"><svg class="ic"><use href="#i-plus"/></svg>Add page</button>
+      <button class="btn ghost" id="btnAddGroup" title="A group is a label that holds the pages below it"><svg class="ic"><use href="#i-folder"/></svg>Add group</button>
     </aside>
     <main id="content">
       <div class="page-inner">

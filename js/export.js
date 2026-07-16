@@ -22,6 +22,52 @@ function chipHtml(id, num, name) {
   return '<span class="ref-chip" contenteditable="false" data-ref="' + id + '">' + chipInner(num, name) + '</span>';
 }
 
+function isH2Block(b) { return b.type === 'heading' && (b.level || 2) === 2; }
+
+/* Groups the flat pages array into a tree: pages, sections, subsections
+   (two levels below a page at most). Pages whose parent is missing, part
+   of a cycle, or nested too deep are treated as top-level pages. */
+function pageTree(project) {
+  var pages = project.pages || [];
+  var byId = {};
+  pages.forEach(function (pg) { byId[pg.id] = pg; });
+  var nodeById = {};
+  var placed = {};
+  var roots = [];
+
+  function nodeFor(pg) {
+    if (!nodeById[pg.id]) nodeById[pg.id] = { page: pg, children: [] };
+    return nodeById[pg.id];
+  }
+
+  function place(pg, level) {
+    if (placed[pg.id]) return;
+    placed[pg.id] = true;
+    if (pg.kind !== 'group' && level >= 2) return;
+    var childLevel = pg.kind === 'group' ? 0 : level + 1;
+    pages.forEach(function (c) {
+      if (c.parentId === pg.id && !placed[c.id]) {
+        nodeFor(pg).children.push(nodeFor(c));
+        place(c, childLevel);
+      }
+    });
+  }
+
+  pages.forEach(function (pg) {
+    if (!pg.parentId || !byId[pg.parentId]) {
+      roots.push(nodeFor(pg));
+      place(pg, 0);
+    }
+  });
+  pages.forEach(function (pg) {
+    if (!placed[pg.id]) {
+      roots.push(nodeFor(pg));
+      placed[pg.id] = true;
+    }
+  });
+  return roots;
+}
+
 /* Map of annotation id to { num, name, desc, figNo } for the whole document. */
 function buildAnnIndex(project) {
   var idx = {};
@@ -112,8 +158,12 @@ function renderDocFigure(b, ctx) {
   var legend = '';
   if (anns.length) {
     legend = '<ol class="legend">' + anns.map(function (a, i) {
+      var nm = escapeHtml(a.name || 'Pin ' + (i + 1));
+      if (a.pageId && ctx.pageIds && ctx.pageIds[a.pageId]) {
+        nm = '<a class="plink" href="#pg-' + a.pageId + '">' + nm + '</a>';
+      }
       return '<li id="pin-' + a.id + '"><span class="ln">' + (i + 1) + '</span><span class="lt"><b>' +
-        escapeHtml(a.name || 'Pin ' + (i + 1)) + '</b>' +
+        nm + '</b>' +
         (a.desc ? ' <span class="ld">' + escapeHtml(a.desc) + '</span>' : '') + '</span></li>';
     }).join('') + '</ol>';
   }
@@ -181,8 +231,12 @@ function docCSS(accent) {
 '#toc ul { list-style: none; padding-left: 14px; margin: 0; }\n' +
 '#toc ul a { font-size: 12.5px; color: #5b6172; padding: 3px 8px; }\n' +
 '#toc li.hide { display: none; }\n' +
-'main { margin-left: 280px; display: flex; justify-content: center; }\n' +
-'.wrap { width: 100%; max-width: 860px; padding: 0 44px 90px; }\n' +
+'#toc li.tgrp { margin-top: 14px; }\n' +
+'#toc li.tgrp > a { text-transform: uppercase; font-size: 11px; letter-spacing: .08em; color: #9096a6; font-weight: 700; }\n' +
+'#toc li.tgrp > a:hover { background: none; color: var(--accent); }\n' +
+'main { margin-left: 280px; }\n' +
+'.wrap { max-width: 860px; margin: 0 auto; padding: 0 44px; }\n' +
+'main > .wrap:last-of-type { padding-bottom: 90px; }\n' +
 '.cover { padding: 78px 0 34px; border-bottom: 2px solid var(--accent); margin-bottom: 18px; }\n' +
 '.cover .logo { max-height: 60px; max-width: 240px; display: block; margin-bottom: 26px; }\n' +
 '.cover h1 { font-size: 40px; line-height: 1.15; margin: 0; letter-spacing: -.01em; }\n' +
@@ -190,7 +244,13 @@ function docCSS(accent) {
 '.meta { display: flex; gap: 30px; margin-top: 24px; font-size: 13.5px; }\n' +
 '.meta div span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: #9096a6; margin-bottom: 1px; }\n' +
 'section.page { padding-top: 30px; }\n' +
+'section.part { margin: 56px 0 8px; background: linear-gradient(135deg, #222838 0%, #2d3555 100%); border-top: 3px solid var(--accent); scroll-margin-top: 0; }\n' +
+'.part-in { max-width: 860px; margin: 0 auto; padding: 42px 44px 38px; }\n' +
+'section.part h1 { margin: 0; font-size: 30px; color: #fff; letter-spacing: -.01em; }\n' +
+'.p-pages { margin-top: 14px; color: rgba(255,255,255,.55); font-size: 13px; }\n' +
 'h1.pt { font-size: 27px; margin: 24px 0 12px; letter-spacing: -.01em; }\n' +
+'h1.pt.ps { font-size: 22px; }\n' +
+'h1.pt.ps2 { font-size: 19px; }\n' +
 '.secno { color: var(--accent); }\n' +
 'h2 { font-size: 20px; margin: 30px 0 8px; }\n' +
 'h3 { font-size: 16.5px; margin: 24px 0 6px; }\n' +
@@ -218,6 +278,8 @@ function docCSS(accent) {
 '.legend li { display: flex; gap: 9px; padding: 4px 0; }\n' +
 '.legend .ln { flex: 0 0 auto; background: var(--accent); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; margin-top: 3px; }\n' +
 '.legend .ld { color: #5b6172; }\n' +
+'.legend .plink { color: var(--accent); text-decoration: none; }\n' +
+'.legend .plink:hover { text-decoration: underline; }\n' +
 '.legend li:target, .legend li.flash { animation: edflash 1.8s ease-out; }\n' +
 '@keyframes edflash { 0% { background: rgba(' + rgb + ',.18); } 100% { background: transparent; } }\n' +
 '.callout { display: flex; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid #e2e5ec; }\n' +
@@ -244,7 +306,9 @@ function docCSS(accent) {
 '  #side.open { transform: none; }\n' +
 '  main { margin-left: 0; }\n' +
 '  #menubtn { display: block; }\n' +
-'  .wrap { padding: 56px 22px 90px; }\n' +
+'  .wrap { padding: 56px 22px 0; }\n' +
+'  main > .wrap:last-of-type { padding-bottom: 90px; }\n' +
+'  .part-in { padding: 38px 22px 34px; }\n' +
 '}\n' +
 '@media print {\n' +
 '  #side, #printbtn, #menubtn { display: none !important; }\n' +
@@ -261,6 +325,8 @@ function docCSS(accent) {
 '  section.page { padding-top: 0; }\n' +
 '  section.page ~ section.page { break-before: page; }\n' +
 '  .print-toc + section.page { break-before: page; }\n' +
+'  section.part { break-before: page; break-after: page; margin: 34vh 0; }\n' +
+'  .print-toc li.pgrp { margin-top: 8pt; font-weight: 700; text-transform: uppercase; font-size: 10pt; letter-spacing: .06em; }\n' +
 '  figure.fig, .callout, .codeblock, table.tbl { break-inside: avoid; }\n' +
 '  .codeblock pre { white-space: pre-wrap; }\n' +
 '}\n' +
@@ -304,7 +370,7 @@ function docJS() {
 '  var q = document.getElementById("q");\n' +
 '  var srBar = document.getElementById("srbar");\n' +
 '  var srCount = document.getElementById("srcount");\n' +
-'  var wrap = document.querySelector(".wrap");\n' +
+'  var wrap = document.querySelector("main");\n' +
 '  var marks = [], mi = -1, deb = null;\n' +
 '\n' +
 '  function clearMarks() {\n' +
@@ -389,35 +455,84 @@ function buildExportHTML(project) {
   p.pages.forEach(function (pg) {
     pg.blocks.forEach(function (b) { if (b.type === 'image') { fn++; figNos[b.id] = fn; } });
   });
+  var pageIds = {};
+  p.pages.forEach(function (pg) { pageIds[pg.id] = true; });
+
+  function headingItems(pg, prefix) {
+    return pg.blocks.filter(isH2Block).map(function (h, j) {
+      return '<li><a href="#hd-' + h.id + '">' + prefix + '.' + (j + 1) + ' ' +
+        escapeHtml(h.text || '') + '</a></li>';
+    }).join('');
+  }
+
+  function renderDocPage(pg, num, depth) {
+    var hIdx = 0;
+    var cls = depth === 0 ? '' : depth === 1 ? ' ps' : ' ps2';
+    var out = '<section class="page' + (depth ? ' sec' : '') + '" id="pg-' + pg.id + '">' +
+      '<h1 class="pt' + cls + '"><span class="secno">' + num +
+      (depth ? '' : '.') + '</span> ' + escapeHtml(pg.title || 'Untitled') + '</h1>';
+    pg.blocks.forEach(function (b) {
+      if (isH2Block(b)) hIdx++;
+      out += renderDocBlock(b, { annIdx: annIdx, figNos: figNos, pageIds: pageIds, secno: num + '.' + hIdx });
+    });
+    return out + '</section>';
+  }
+
+  function walkPage(node, num, depth) {
+    var childBase = node.page.blocks.filter(isH2Block).length;
+    var sub = headingItems(node.page, num);
+    var printSub = sub;
+    var pageBody = renderDocPage(node.page, num, depth);
+    node.children.forEach(function (cn, k) {
+      var r = walkPage(cn, num + '.' + (childBase + k + 1), depth + 1);
+      sub += r.toc;
+      printSub += r.print;
+      pageBody += r.body;
+    });
+    var link = '<a href="#pg-' + node.page.id + '">' + num + (depth ? ' ' : '. ') +
+      escapeHtml(node.page.title || 'Untitled') + '</a>';
+    return {
+      toc: '<li>' + link + (sub ? '<ul>' + sub + '</ul>' : '') + '</li>',
+      print: '<li>' + link + (printSub ? '<ol>' + printSub + '</ol>' : '') + '</li>',
+      body: pageBody
+    };
+  }
 
   var toc = '';
   var printToc = '';
-  p.pages.forEach(function (pg, i) {
-    var title = escapeHtml(pg.title || 'Untitled');
-    var subs = pg.blocks.filter(function (b) { return b.type === 'heading' && (b.level || 2) === 2; });
-    var subToc = '';
-    var subPrint = '';
-    subs.forEach(function (h, j) {
-      var st = (i + 1) + '.' + (j + 1) + ' ' + escapeHtml(h.text || '');
-      subToc += '<li><a href="#hd-' + h.id + '">' + st + '</a></li>';
-      subPrint += '<li><a href="#hd-' + h.id + '">' + st + '</a></li>';
-    });
-    toc += '<li><a href="#pg-' + pg.id + '">' + (i + 1) + '. ' + title + '</a>' +
-      (subToc ? '<ul>' + subToc + '</ul>' : '') + '</li>';
-    printToc += '<li><a href="#pg-' + pg.id + '">' + (i + 1) + '. ' + title + '</a>' +
-      (subPrint ? '<ol>' + subPrint + '</ol>' : '') + '</li>';
-  });
-
   var body = '';
-  p.pages.forEach(function (pg, i) {
-    var hIdx = 0;
-    body += '<section class="page" id="pg-' + pg.id + '">' +
-      '<h1 class="pt"><span class="secno">' + (i + 1) + '.</span> ' + escapeHtml(pg.title || 'Untitled') + '</h1>';
-    pg.blocks.forEach(function (b) {
-      if (b.type === 'heading' && (b.level || 2) === 2) hIdx++;
-      body += renderDocBlock(b, { annIdx: annIdx, figNos: figNos, secno: (i + 1) + '.' + hIdx });
-    });
-    body += '</section>';
+  var pn = 0;
+  pageTree(p).forEach(function (node) {
+    if (node.page.kind === 'group') {
+      var gt = escapeHtml(node.page.title || 'Group');
+      var inTocSub = '';
+      var inPrintSub = '';
+      var inBody = '';
+      node.children.forEach(function (cn) {
+        pn++;
+        var cr = walkPage(cn, String(pn), 0);
+        inTocSub += cr.toc;
+        inPrintSub += cr.print;
+        inBody += cr.body;
+      });
+      var members = node.children.map(function (cn) {
+        return escapeHtml(cn.page.title || 'Untitled');
+      }).join(' &#183; ');
+      toc += '<li class="tgrp"><a href="#pg-' + node.page.id + '">' + gt + '</a>' +
+        (inTocSub ? '<ul>' + inTocSub + '</ul>' : '') + '</li>';
+      printToc += '<li class="pgrp"><a href="#pg-' + node.page.id + '">' + gt + '</a>' +
+        (inPrintSub ? '<ol>' + inPrintSub + '</ol>' : '') + '</li>';
+      body += '</div><section class="part" id="pg-' + node.page.id + '"><div class="part-in">' +
+        '<h1>' + gt + '</h1>' +
+        (members ? '<div class="p-pages">' + members + '</div>' : '') +
+        '</div></section><div class="wrap">' + inBody;
+      return;
+    }
+    pn++;
+    var r = walkPage(node, String(pn), 0);
+    toc += r.toc;
+    printToc += r.print;
+    body += r.body;
   });
 
   var meta = '';
@@ -467,6 +582,7 @@ if (typeof module !== 'undefined' && module.exports) {
     buildAnnIndex: buildAnnIndex,
     escapeHtml: escapeHtml,
     slugify: slugify,
-    chipHtml: chipHtml
+    chipHtml: chipHtml,
+    pageTree: pageTree
   };
 }

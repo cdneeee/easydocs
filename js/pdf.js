@@ -197,7 +197,12 @@ function pdfBlock(b, ctx) {
       if (anns.length) {
         out.push({
           ol: anns.map(function (a, i) {
-            var runs = [{ text: a.name || 'Pin ' + (i + 1), bold: true }];
+            var nameRun = { text: a.name || 'Pin ' + (i + 1), bold: true };
+            if (a.pageId && ctx.pageIds && ctx.pageIds[a.pageId]) {
+              nameRun.color = ctx.accent;
+              nameRun.linkToDestination = 'pg-' + a.pageId;
+            }
+            var runs = [nameRun];
             if (a.desc) runs.push({ text: '  ' + a.desc, color: '#5b6172' });
             return { text: runs, id: 'pin-' + a.id, margin: [0, 1, 0, 1] };
           }),
@@ -222,6 +227,8 @@ function assembleDocDefinition(p, accent, annIdx, comp) {
   p.pages.forEach(function (pg) {
     pg.blocks.forEach(function (b) { if (b.type === 'image') { fn++; figNos[b.id] = fn; } });
   });
+  var pageIds = {};
+  p.pages.forEach(function (pg) { pageIds[pg.id] = true; });
 
   var content = [];
 
@@ -248,17 +255,54 @@ function assembleDocDefinition(p, accent, annIdx, comp) {
 
   content.push({ toc: { title: { text: 'Contents', style: 'h1' } }, pageBreak: 'before' });
 
-  p.pages.forEach(function (pg, i) {
+  function pdfPage(pg, num, depth) {
     content.push({
-      text: (i + 1) + '. ' + (pg.title || 'Untitled'),
-      style: 'h1', tocItem: true, id: 'pg-' + pg.id, pageBreak: 'before'
+      text: num + (depth ? ' ' : '. ') + (pg.title || 'Untitled'),
+      style: depth === 0 ? 'h1' : depth === 1 ? 'h1s' : 'h1ss',
+      tocItem: true,
+      tocMargin: [depth * 14, 0, 0, 0],
+      id: 'pg-' + pg.id,
+      pageBreak: 'before'
     });
     var hIdx = 0;
     pg.blocks.forEach(function (b) {
-      if (b.type === 'heading' && (b.level || 2) === 2) hIdx++;
-      var ctx = { annIdx: annIdx, accent: accent, figNos: figNos, comp: comp, secno: (i + 1) + '.' + hIdx };
+      if (isH2Block(b)) hIdx++;
+      var ctx = { annIdx: annIdx, accent: accent, figNos: figNos, comp: comp, pageIds: pageIds, secno: num + '.' + hIdx };
       pdfBlock(b, ctx).forEach(function (node) { content.push(node); });
     });
+  }
+
+  function walkPdf(node, num, depth) {
+    pdfPage(node.page, num, depth);
+    var childBase = node.page.blocks.filter(isH2Block).length;
+    node.children.forEach(function (cn, k) {
+      walkPdf(cn, num + '.' + (childBase + k + 1), depth + 1);
+    });
+  }
+
+  var pn = 0;
+  pageTree(p).forEach(function (node) {
+    if (node.page.kind === 'group') {
+      var members = node.children.map(function (cn) {
+        return cn.page.title || 'Untitled';
+      }).join('  ·  ');
+      var stack = [
+        {
+          text: node.page.title || 'Group', fontSize: 26, bold: true, color: '#1e2430',
+          margin: [0, 240, 0, 0], tocItem: true, tocStyle: { bold: true }, id: 'pg-' + node.page.id
+        },
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 2, lineColor: accent }], margin: [0, 14, 0, 0] }
+      ];
+      if (members) stack.push({ text: members, color: '#5b6172', fontSize: 9.5, margin: [0, 12, 0, 0] });
+      content.push({ stack: stack, pageBreak: 'before' });
+      node.children.forEach(function (cn) {
+        pn++;
+        walkPdf(cn, String(pn), 0);
+      });
+      return;
+    }
+    pn++;
+    walkPdf(node, String(pn), 0);
   });
 
   return {
@@ -276,6 +320,8 @@ function assembleDocDefinition(p, accent, annIdx, comp) {
     },
     styles: {
       h1: { fontSize: 20, bold: true, margin: [0, 0, 0, 10] },
+      h1s: { fontSize: 16, bold: true, margin: [0, 0, 0, 8] },
+      h1ss: { fontSize: 13.5, bold: true, margin: [0, 0, 0, 7] },
       h2: { fontSize: 14, bold: true, margin: [0, 14, 0, 4] },
       h3: { fontSize: 11.5, bold: true, margin: [0, 10, 0, 3] },
       para: { margin: [0, 3, 0, 5] },
