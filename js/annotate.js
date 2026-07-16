@@ -7,12 +7,53 @@ function openAnnotator(blockId) {
   var b = Store.block(blockId);
   if (!b || b.type !== 'image') return;
   annoState = { blockId: blockId, anns: deepClone(b.annotations || []), selId: null, pinSize: b.pinSize || 24 };
-  $('#annoImg').src = b.src;
+  var img = $('#annoImg');
+  img.classList.remove('zoomed');
+  img.style.width = '';
+  img.src = b.src;
   $('#annoSize').value = annoState.pinSize;
   $('#annoSizeVal').textContent = annoState.pinSize + ' px';
   renderAnnoPins();
   renderAnnoList();
   showModal('#annoModal');
+  setTimeout(updateAnnoZoomLabel, 0);
+}
+
+/* Annotator zoom. Percentages are of the natural pixel size of the image;
+   Fit sizes the image to the stage. */
+
+function annoImgScale() {
+  var img = $('#annoImg');
+  if (!img.naturalWidth) return 1;
+  var w = img.getBoundingClientRect().width;
+  return w ? w / img.naturalWidth : 1;
+}
+
+function updateAnnoZoomLabel() {
+  $('#annoZoomVal').textContent = Math.round(annoImgScale() * 100) + '%';
+}
+
+function setAnnoZoom(scale, cx, cy) {
+  var img = $('#annoImg');
+  var stage = $('#annoStage');
+  if (!img.naturalWidth) return;
+  var rect = img.getBoundingClientRect();
+  var srect = stage.getBoundingClientRect();
+  if (cx == null) { cx = srect.left + srect.width / 2; cy = srect.top + srect.height / 2; }
+  var relX = rect.width ? (cx - rect.left) / rect.width : 0.5;
+  var relY = rect.height ? (cy - rect.top) / rect.height : 0.5;
+  if (scale === 'fit') {
+    img.classList.remove('zoomed');
+    img.style.width = '';
+  } else {
+    scale = clamp(scale, 0.1, 4);
+    img.classList.add('zoomed');
+    img.style.width = Math.round(img.naturalWidth * scale) + 'px';
+    var nrect = img.getBoundingClientRect();
+    stage.scrollLeft += (nrect.left + relX * nrect.width) - cx;
+    stage.scrollTop += (nrect.top + relY * nrect.height) - cy;
+  }
+  updateAnnoZoomLabel();
 }
 
 function renderAnnoPins() {
@@ -135,6 +176,18 @@ function renderAnnoList() {
 }
 
 function initAnnotator() {
+  $('#annoZoomIn').addEventListener('click', function () { setAnnoZoom(annoImgScale() * 1.25); });
+  $('#annoZoomOut').addEventListener('click', function () { setAnnoZoom(annoImgScale() / 1.25); });
+  $('#annoZoomVal').addEventListener('click', function () { setAnnoZoom(1); });
+  $('#annoZoomFit').addEventListener('click', function () { setAnnoZoom('fit'); });
+  $('#annoImg').addEventListener('load', updateAnnoZoomLabel);
+  $('#annoStage').addEventListener('wheel', function (e) {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    var factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    setAnnoZoom(annoImgScale() * factor, e.clientX, e.clientY);
+  }, { passive: false });
+
   $('#annoSize').addEventListener('input', function () {
     if (!annoState) return;
     annoState.pinSize = +this.value;

@@ -895,7 +895,9 @@ hr.div-ed { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 
 .modal-head .hint { color: var(--mut); font-size: 12.5px; flex: 1; }
 
-.modal-head .icon-btn { margin-left: auto; }
+.modal-head [data-close] { margin-left: auto; }
+
+.anno-zoom { margin-left: 10px; flex: 0 0 auto; }
 
 .modal-foot {
   display: flex;
@@ -917,15 +919,15 @@ hr.div-ed { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
   flex: 1;
   background: #21242e;
   display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: auto;
   padding: 22px;
 }
 
-.anno-wrap { position: relative; cursor: crosshair; }
+.anno-wrap { position: relative; cursor: crosshair; margin: auto; }
 
 #annoImg { display: block; max-width: 100%; max-height: calc(92vh - 210px); border-radius: 6px; }
+
+#annoImg.zoomed { max-width: none; max-height: none; }
 
 .anno-side {
   width: 300px;

@@ -108,7 +108,13 @@
   <div class="modal annotator">
     <div class="modal-head">
       <b>Annotate screenshot</b>
-      <span class="hint">Click the image to add a pin. Drag a pin to move it.</span>
+      <span class="hint">Click the image to add a pin. Drag a pin to move it. Ctrl + scroll zooms.</span>
+      <div class="zoom-ctl anno-zoom">
+        <button class="icon-btn" id="annoZoomOut" title="Zoom out"><svg class="ic"><use href="#i-minus"/></svg></button>
+        <button class="zoom-val" id="annoZoomVal" title="Zoom to the actual pixel size">100%</button>
+        <button class="icon-btn" id="annoZoomIn" title="Zoom in"><svg class="ic"><use href="#i-plus"/></svg></button>
+        <button class="zoom-val" id="annoZoomFit" title="Fit the whole image">Fit</button>
+      </div>
       <button class="icon-btn" data-close title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
     </div>
     <div class="anno-body">

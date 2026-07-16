@@ -158,7 +158,7 @@ function sampleProject() {
       {
         id: uid(), type: 'list', ordered: true, html:
           '<li>Click the screenshot. The annotate view opens.</li>' +
-          '<li>Click any spot on the image to drop a numbered pin.</li>' +
+          '<li>Click any spot on the image to drop a numbered pin. Zoom with the controls in the header, or Ctrl + scroll, for pixel-accurate placement.</li>' +
           '<li>Give the pin a name and an optional description in the panel on the right.</li>' +
           '<li>Optionally pick a page, section, or subsection the pin should link to. Readers can then jump there from the figure legend; pin 3 on the demo screenshot links to Pages and sections.</li>' +
           '<li>Drag pins to fine-tune their position, and use the pin size slider if they cover too much of the image.</li>' +
