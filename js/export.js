@@ -324,7 +324,8 @@ function docCSS(accent) {
 '  .print-toc ol ol { padding-left: 18pt; font-size: 10.5pt; }\n' +
 '  .print-toc a { color: #1e2430; text-decoration: none; }\n' +
 '  section.page { padding-top: 0; }\n' +
-'  section.page ~ section.page { break-before: page; }\n' +
+'  section.page ~ section.page:not(.sec) { break-before: page; }\n' +
+'  section.page.sec h1 { break-after: avoid; }\n' +
 '  .print-toc + section.page { break-before: page; }\n' +
 '  section.part { break-before: page; break-after: page; margin: 34vh 0; }\n' +
 '  .print-toc li.pgrp { margin-top: 8pt; font-weight: 700; text-transform: uppercase; font-size: 10pt; letter-spacing: .06em; }\n' +

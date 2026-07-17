@@ -117,9 +117,9 @@ function pdfBlock(b, ctx) {
     }
     case 'heading': {
       if ((b.level || 2) === 3) {
-        out.push({ text: b.text || '', style: 'h3', id: 'hd-' + b.id });
+        out.push({ text: b.text || '', style: 'h3', id: 'hd-' + b.id, headlineLevel: 1 });
       } else {
-        out.push({ text: [{ text: ctx.secno + ' ', color: ctx.accent }, b.text || ''], style: 'h2', id: 'hd-' + b.id });
+        out.push({ text: [{ text: ctx.secno + ' ', color: ctx.accent }, b.text || ''], style: 'h2', id: 'hd-' + b.id, headlineLevel: 1 });
       }
       break;
     }
@@ -151,6 +151,7 @@ function pdfBlock(b, ctx) {
       var coRuns = htmlToRuns(b.html, ctx.annIdx, ctx.accent);
       out.push({
         table: {
+          dontBreakRows: true,
           widths: [3, '*'],
           body: [[
             { text: '', fillColor: k.bar },
@@ -191,8 +192,14 @@ function pdfBlock(b, ctx) {
       if (!b.src) break;
       var fno = ctx.figNos[b.id];
       var w = Math.round(PDF_CW * (b.width || 100) / 100);
-      out.push({ image: ctx.comp[b.id] || b.src, fit: [w, 620], margin: [0, 8, 0, 4] });
-      out.push({ text: [{ text: 'Figure ' + fno + '.', bold: true }, ' ' + (b.caption || '')], style: 'caption', id: 'fig-' + b.id });
+      out.push({
+        figure: true,
+        unbreakable: true,
+        stack: [
+          { image: ctx.comp[b.id] || b.src, fit: [w, 620], margin: [0, 8, 0, 4] },
+          { text: [{ text: 'Figure ' + fno + '.', bold: true }, ' ' + (b.caption || '')], style: 'caption', id: 'fig-' + b.id }
+        ]
+      });
       var anns = b.annotations || [];
       if (anns.length) {
         out.push({
@@ -255,21 +262,37 @@ function assembleDocDefinition(p, accent, annIdx, comp) {
 
   content.push({ toc: { title: { text: 'Contents', style: 'h1' } }, pageBreak: 'before' });
 
+  /* Top-level pages start a fresh sheet; sections and subsections flow on,
+     so short ones do not each cost a mostly empty page. */
   function pdfPage(pg, num, depth) {
-    content.push({
+    var head = {
       text: num + (depth ? ' ' : '. ') + (pg.title || 'Untitled'),
       style: depth === 0 ? 'h1' : depth === 1 ? 'h1s' : 'h1ss',
       tocItem: true,
       tocMargin: [depth * 14, 0, 0, 0],
-      id: 'pg-' + pg.id,
-      pageBreak: 'before'
-    });
+      id: 'pg-' + pg.id
+    };
+    if (depth === 0) {
+      head.pageBreak = 'before';
+    } else {
+      head.margin = depth === 1 ? [0, 24, 0, 8] : [0, 18, 0, 7];
+      head.headlineLevel = 1;
+    }
+    var nodes = [head];
     var hIdx = 0;
     pg.blocks.forEach(function (b) {
       if (isH2Block(b)) hIdx++;
       var ctx = { annIdx: annIdx, accent: accent, figNos: figNos, comp: comp, pageIds: pageIds, secno: num + '.' + hIdx };
-      pdfBlock(b, ctx).forEach(function (node) { content.push(node); });
+      pdfBlock(b, ctx).forEach(function (node) { nodes.push(node); });
     });
+    /* A heading directly above a figure moves into the figure's unbreakable
+       stack, so the two can never end up on different pages. */
+    for (var i = nodes.length - 1; i > 0; i--) {
+      if (nodes[i].figure && nodes[i - 1].headlineLevel === 1) {
+        nodes[i].stack.unshift(nodes.splice(i - 1, 1)[0]);
+      }
+    }
+    nodes.forEach(function (node) { content.push(node); });
   }
 
   function walkPdf(node, num, depth) {
@@ -309,6 +332,13 @@ function assembleDocDefinition(p, accent, annIdx, comp) {
     content: content,
     pageSize: 'A4',
     pageMargins: [48, 52, 48, 56],
+    pageBreakBefore: function (node) {
+      /* A heading starting in the last 80pt of the page would sit alone,
+         cut off from the content it introduces. Headings directly above a
+         figure are covered separately: they travel inside the figure's
+         unbreakable stack. */
+      return node.headlineLevel === 1 && node.startPosition && node.startPosition.top > 706;
+    },
     info: { title: p.title || 'Document', author: p.author || '' },
     header: function (page) {
       if (page === 1) return null;
