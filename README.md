@@ -1,8 +1,8 @@
 # EasyDocs
 
-**A lightweight documentation creator that runs entirely in your browser.** Write pages and blocks, drop in screenshots and tag them with numbered pins, then export a single self-contained HTML file or a real PDF. No install, no build step, no server — and nothing ever leaves your machine.
+A lightweight documentation editor. Write docs, annotate screenshots with numbered pins, export to a single HTML file or a real PDF. Runs fully in your browser. No install, no server, no accounts.
 
-<!-- Repo-stats badges: replace `cdneeee/easydocs` below with your own owner/repo.
+<!-- Repo-stats badges: replace `cdneeee/easydocs` with your own owner/repo.
      They stay grey until the repository is pushed and public on GitHub. -->
 [![Stars](https://img.shields.io/github/stars/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/stargazers)
 [![Forks](https://img.shields.io/github/forks/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/network/members)
@@ -12,90 +12,78 @@
 ![Last commit](https://img.shields.io/github/last-commit/cdneeee/easydocs)
 ![Open issues](https://img.shields.io/github/issues/cdneeee/easydocs)
 ![Repo size](https://img.shields.io/github/repo-size/cdneeee/easydocs)
-![Build step: none](https://img.shields.io/badge/build-none-brightgreen)
+![Build: none](https://img.shields.io/badge/build-none-brightgreen)
 ![Storage: local only](https://img.shields.io/badge/storage-local%20only-informational)
 
-> **Live demo:** replace this line with your GitHub Pages URL after deploying, e.g. `https://<your-user>.github.io/easydocs/`
+> **Live demo:** add your GitHub Pages URL here after deploying.
+
+Works offline. Can also run locally in any modern browser.
 
 ![The EasyDocs editor with an annotated screenshot](docs/screenshots/editor-annotated.jpg)
 
----
+## Features
 
-## Screenshots
-
-| Home — your private set of documents | Annotate a screenshot with numbered pins |
-| --- | --- |
-| ![Home screen](docs/screenshots/home.jpg) | ![Screenshot annotator](docs/screenshots/annotator.jpg) |
-
-**Type `/` for a block menu, or use Markdown shortcuts as you write:**
-
-![Slash menu](docs/screenshots/slash-menu.jpg)
-
-## Getting started
-
-Open the live demo above and start writing — there is nothing to install, and it works fully offline. It can also be run locally in any modern browser.
-
-The first launch creates a sample document called **EasyDocs Guide**. It is written in EasyDocs itself and walks through every feature. It stays pinned on your home screen as a permanent reference and cannot be deleted; create your own documents alongside it with **New document**.
-
-Everything is stored locally in your browser, so each browser holds its own private set of documents and nobody else can see them. Because that storage can be cleared, the home screen shows a reminder to keep **Save .json** backups of anything important.
-
-## What it does
-
-- **Multi-document home screen.** Documents live in the browser (IndexedDB) and autosave as you type. Duplicate, delete with undo, import and export. The built-in example guide is always present and undeletable.
-- **Fast composing.** Type `/` on an empty line for a block picker that filters as you type. Markdown shortcuts convert while you write, Enter splits a paragraph into a new block, and every block has a drag handle for reordering (see the table below).
-- **Pages, sections, and blocks.** Each document is a set of pages (drag to reorder, double-click to rename). A page can hold sections, and a section can hold subsections: hover an item in the sidebar and press the + button. The tree shows in the sidebar, in the exported contents, and in the numbering (page 1, its headings 1.1 and 1.2, a section as 1.3, a subsection as 1.3.1). A page is a stack of blocks: text, headings, lists, screenshots, code, callouts, tables, and dividers.
-- **Groups.** Add group creates a folder label in the sidebar that holds pages, which separates large documents visually. Delete the label to ungroup (pages stay). Groups appear as unnumbered part dividers in the exports; page numbering continues across them.
-- **Drag and drop everywhere.** Every sidebar item moves together with everything nested in it. Drop near the top or bottom edge of a target to place before or after it; drop on the middle to nest inside it, whenever the hierarchy allows. Groups always stay at the top level and nesting stops at subsections.
-- **Screenshot annotation.** Import several screenshots at once (file picker, drag and drop, or Ctrl+V straight from Win+Shift+S). Click a screenshot to open the annotator, then click spots on the image to drop numbered pins with a name and description. Zoom with the header controls or Ctrl + scroll for pixel-accurate placement. A pin can also link to a page, section, or subsection: readers jump there from the figure legend in the editor, the HTML export, and the PDF. A pin size slider adjusts how large the markers render.
-- **Pin references in text.** While editing text, press the Ref button in the small toolbar and pick a pin. An inline chip appears that stays in sync when pins are renamed and turns into a jump link in the exports.
-- **HTML export.** One self-contained file with a navigation sidebar, live search with match highlighting, figure numbering, and print styles.
-- **One-click PDF.** The PDF button produces a real PDF (selectable text) with a cover page, a table of contents with page numbers, page footers, and pins drawn onto the figures.
-- **Markdown import.** Bring existing docs in from the home screen (level-1 headings become pages) or append Markdown to the current page.
-- **Editor zoom.** The minus and plus buttons in the top bar scale the editing surface from 50 to 200 percent. It is a view preference for this browser and never affects exports.
+|   | Feature | What it does |
+|---|---------|--------------|
+| ✍️ | **Block editor** | Text, headings, lists, code, callouts, tables, images, dividers |
+| ⚡ | **Fast input** | `/` block menu, Markdown shortcuts, smart Enter, drag to reorder |
+| 📌 | **Screenshot pins** | Drop numbered pins on images, name them, link them to pages |
+| 🔗 | **Pin references** | Inline chips in text that stay in sync and turn into jump links |
+| 🗂️ | **Structure** | Pages, sections, subsections, groups. Drag anything to reorder |
+| 📄 | **HTML export** | One self-contained file with sidebar nav and live search |
+| 🖨️ | **PDF export** | Cover page, contents with page numbers, pins drawn on figures |
+| 📥 | **Markdown import** | Turn Markdown into pages, or append it to a page |
+| 💾 | **Local and private** | Autosaves to your browser. `.json` backup. Nothing leaves your device |
 
 ## Composing shortcuts
 
-Everything below fires on an otherwise-empty line, so it never gets in the way of normal typing.
+Each fires on an empty line, so it never blocks normal typing.
 
 | Type this | You get |
-| --- | --- |
-| `/` | a block menu, filtered as you keep typing (`/co` &rarr; Code) |
-| `# ` / `## ` | a heading (H2 / H3) |
-| `- ` or `* ` | a bullet list |
-| `1. ` | a numbered list |
-| `> ` | a callout |
-| <code>&#96;&#96;&#96;</code> | a code block |
-| `---` | a divider |
-| `Enter` | split the paragraph at the cursor into a new block |
-| `Enter` on an empty list item | leave the list and start a new paragraph |
+|-----------|---------|
+| `/` | block menu, filtered as you type (`/co` &rarr; Code) |
+| `# ` / `## ` | heading (H2 / H3) |
+| `- ` or `* ` | bullet list |
+| `1. ` | numbered list |
+| `> ` | callout |
+| <code>&#96;&#96;&#96;</code> | code block |
+| `---` | divider |
+| `Enter` | split the paragraph into a new block |
+| `Enter` on an empty list item | leave the list |
 
-Drag the grip in a block's hover controls to reorder blocks; use the up / down arrows for single steps.
+Drag the grip in a block's hover controls to move it; use the arrows for single steps.
 
-## Getting a PDF
+## Screenshots
 
-Two ways:
+| Home | Annotator |
+|------|-----------|
+| ![Home screen](docs/screenshots/home.jpg) | ![Screenshot annotator](docs/screenshots/annotator.jpg) |
 
-1. Press **PDF** in the editor top bar. This uses the bundled pdfmake engine in `vendor/` and downloads a finished PDF.
-2. Open an exported HTML file and press **Ctrl+P** (or its floating print button). The print styles produce a clean A4 layout with a cover sheet, contents, and per-page breaks. Pick "Save as PDF" as the printer.
+![Slash menu](docs/screenshots/slash-menu.jpg)
 
-The first way gives you page numbers in the table of contents. The second preserves the exact web styling.
+## Storage and backup
 
-## Backups and moving between machines
+Documents save to your browser (IndexedDB), private to that browser. A built-in example guide is always pinned and cannot be deleted; add your own docs alongside it.
 
-Autosave covers browser storage only. For a file you can keep or move, use **Save .json** in the top bar and re-import it later with **Open .json** on the home screen. Exported HTML files are for readers; `.json` files are the editable source.
+Clearing site data wipes everything, so use **Save .json** for file backups and **Open .json** to bring them back.
+
+## Export to PDF
+
+1. **PDF** button: bundled pdfmake engine, contents with page numbers.
+2. Open the exported HTML and press **Ctrl+P**, then pick "Save as PDF".
 
 ## Host it yourself
 
-EasyDocs is a static site with no build step and no backend, so any static host works and there is nothing to run or pay for. Data stays in each visitor's browser.
+Static site, no build, no backend. Any static host works, and data stays in each visitor's browser.
 
-Using **GitHub Pages**:
+**GitHub Pages:**
 
-1. Push this repository to GitHub (public or private).
-2. In the repository, open **Settings &rarr; Pages**.
-3. Under **Build and deployment**, set **Source** to *Deploy from a branch*, pick the `main` branch and the `/ (root)` folder, and save.
-4. Wait for the build, then open the URL it shows (for a project site it looks like `https://<user>.github.io/<repo>/`).
+1. Push this repo to GitHub.
+2. Open **Settings › Pages**.
+3. Source: **Deploy from a branch**, pick `main` and `/ (root)`.
+4. Open the URL it gives you.
 
-The paths in `index.html` are relative, so it works from a subpath without changes. The `.nojekyll` file tells Pages to serve the files as-is. Any other static host (Cloudflare Pages, Netlify, Vercel) works the same way: point it at this repository, no build command, output directory is the repository root.
+Paths are relative, so a project subpath works. `.nojekyll` serves files as-is. Cloudflare Pages, Netlify, and Vercel work the same way with no build command.
 
 ## Files
 
@@ -117,15 +105,6 @@ vendor/         pdfmake.min.js and vfs_fonts.js (pdfmake 0.2.23, MIT)
 docs/           screenshots used in this README
 ```
 
-## Notes and limits
-
-- Screenshots are stored inside the document as data URIs and are downscaled on import (default max width 1600 px, adjustable in document settings) to keep files small.
-- The bundled Roboto font in the PDF covers Latin and Cyrillic text.
-- If the `vendor/` files are missing, the PDF button falls back to opening the print view of the HTML export.
-- Clearing browser site data deletes the stored documents. Keep `.json` backups of anything important.
-
 ## License
 
-EasyDocs is released under the MIT License. See [LICENSE](LICENSE).
-
-It bundles pdfmake (MIT) and the Roboto font (Apache-2.0) in `vendor/`. Their license texts are in [vendor/LICENSES.md](vendor/LICENSES.md) and must be kept with any copy you distribute.
+MIT, see [LICENSE](LICENSE). Bundles pdfmake (MIT) and Roboto (Apache-2.0); notices in [vendor/LICENSES.md](vendor/LICENSES.md).
