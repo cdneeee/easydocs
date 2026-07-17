@@ -16,11 +16,11 @@ A lightweight documentation editor. Write docs, annotate screenshots with number
 ![Storage: local only](https://img.shields.io/badge/storage-local%20only-informational)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/cdneeee)
 
-> **Live demo:** add your GitHub Pages URL here after deploying.
+> **Live demo:** https://cdneeee.github.io/easydocs/
 
 Works offline. Can also run locally in any modern browser.
 
-![The EasyDocs editor with an annotated screenshot](docs/screenshots/editor-annotated.jpg)
+[![The EasyDocs editor with an annotated screenshot](docs/screenshots/editor-annotated.jpg)](https://cdneeee.github.io/easydocs/)
 
 ## Features
 
