@@ -2,9 +2,17 @@
 
 **A lightweight documentation creator that runs entirely in your browser.** Write pages and blocks, drop in screenshots and tag them with numbered pins, then export a single self-contained HTML file or a real PDF. No install, no build step, no server — and nothing ever leaves your machine.
 
-![License: MIT](https://img.shields.io/badge/License-MIT-4f46e5.svg)
+<!-- Repo-stats badges: replace `cdneeee/easydocs` below with your own owner/repo.
+     They stay grey until the repository is pushed and public on GitHub. -->
+[![Stars](https://img.shields.io/github/stars/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/stargazers)
+[![Forks](https://img.shields.io/github/forks/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/network/members)
+[![Watchers](https://img.shields.io/github/watchers/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/watchers)
+
+![License: MIT](https://img.shields.io/github/license/cdneeee/easydocs?color=4f46e5)
+![Last commit](https://img.shields.io/github/last-commit/cdneeee/easydocs)
+![Open issues](https://img.shields.io/github/issues/cdneeee/easydocs)
+![Repo size](https://img.shields.io/github/repo-size/cdneeee/easydocs)
 ![Build step: none](https://img.shields.io/badge/build-none-brightgreen)
-![External runtime deps: 0](https://img.shields.io/badge/CDN%20deps-0-brightgreen)
 ![Storage: local only](https://img.shields.io/badge/storage-local%20only-informational)
 
 > **Live demo:** replace this line with your GitHub Pages URL after deploying, e.g. `https://<your-user>.github.io/easydocs/`
@@ -19,13 +27,13 @@
 | --- | --- |
 | ![Home screen](docs/screenshots/home.jpg) | ![Screenshot annotator](docs/screenshots/annotator.jpg) |
 
-| Type `/` for a block menu | |
-| --- | --- |
-| ![Slash menu](docs/screenshots/slash-menu.jpg) | |
+**Type `/` for a block menu, or use Markdown shortcuts as you write:**
 
-## Run it
+![Slash menu](docs/screenshots/slash-menu.jpg)
 
-Open `index.html` in Chrome, Edge, or Firefox. That is all — there is nothing to install or build.
+## Getting started
+
+Open the live demo above and start writing — there is nothing to install, and it works fully offline. It can also be run locally in any modern browser.
 
 The first launch creates a sample document called **EasyDocs Guide**. It is written in EasyDocs itself and walks through every feature. It stays pinned on your home screen as a permanent reference and cannot be deleted; create your own documents alongside it with **New document**.
 
@@ -115,15 +123,6 @@ docs/           screenshots used in this README
 - The bundled Roboto font in the PDF covers Latin and Cyrillic text.
 - If the `vendor/` files are missing, the PDF button falls back to opening the print view of the HTML export.
 - Clearing browser site data deletes the stored documents. Keep `.json` backups of anything important.
-
-## Quick smoke checklist
-
-1. Open `index.html`, open the sample guide.
-2. Add a page, then type `/` and pick a block; try `# `, `- `, and `> ` shortcuts.
-3. Paste or import two screenshots at once, click one, add two pins, press Done.
-4. In a paragraph, press Ref and insert both pins, then rename a pin and watch the chip update.
-5. Export HTML, open it, search for a word, click a reference chip.
-6. Press PDF and check the contents page numbers and the pins on figures.
 
 ## License
 
