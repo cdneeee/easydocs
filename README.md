@@ -14,6 +14,7 @@ A lightweight documentation editor. Write docs, annotate screenshots with number
 ![Repo size](https://img.shields.io/github/repo-size/cdneeee/easydocs)
 ![Build: none](https://img.shields.io/badge/build-none-brightgreen)
 ![Storage: local only](https://img.shields.io/badge/storage-local%20only-informational)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/cdneeee)
 
 > **Live demo:** add your GitHub Pages URL here after deploying.
 
@@ -104,6 +105,12 @@ js/app.js       app shell and wiring
 vendor/         pdfmake.min.js and vfs_fonts.js (pdfmake 0.2.23, MIT)
 docs/           screenshots used in this README
 ```
+
+## Support
+
+If EasyDocs saves you time, you can [buy me a coffee](https://www.buymeacoffee.com/cdneeee).
+
+<a href="https://www.buymeacoffee.com/cdneeee" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="44"></a>
 
 ## License
 
