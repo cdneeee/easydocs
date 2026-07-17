@@ -8,7 +8,7 @@ A lightweight documentation editor. Write docs, annotate screenshots with number
 [![Forks](https://img.shields.io/github/forks/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/network/members)
 [![Watchers](https://img.shields.io/github/watchers/cdneeee/easydocs?style=social)](https://github.com/cdneeee/easydocs/watchers)
 
-![License: MIT](https://img.shields.io/github/license/cdneeee/easydocs?color=4f46e5)
+![License: MIT](https://img.shields.io/badge/license-MIT-4f46e5)
 ![Last commit](https://img.shields.io/github/last-commit/cdneeee/easydocs)
 ![Open issues](https://img.shields.io/github/issues/cdneeee/easydocs)
 ![Repo size](https://img.shields.io/github/repo-size/cdneeee/easydocs)
