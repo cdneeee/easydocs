@@ -722,6 +722,7 @@ hr.div-ed { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
   margin: 8px 0 4px;
   cursor: pointer;
   max-width: 100%;
+  container-type: inline-size;
 }
 
 .shot-ed img {

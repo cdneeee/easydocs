@@ -150,7 +150,8 @@ function renderDocFigure(b, ctx) {
   var fno = ctx.figNos[b.id];
   var anns = b.annotations || [];
   var ps = b.pinSize || 24;
-  var sizeCss = ';width:' + ps + 'px;height:' + ps + 'px;font-size:' + Math.round(ps * 0.5) + 'px';
+  var pw = ps * 100 / 696;
+  var sizeCss = ';width:' + pw.toFixed(3) + 'cqw;height:' + pw.toFixed(3) + 'cqw;font-size:' + (pw / 2).toFixed(3) + 'cqw';
   var pins = anns.map(function (a, i) {
     return '<a class="pin" style="left:' + a.x + '%;top:' + a.y + '%' + sizeCss + '" href="#pin-' + a.id +
       '" title="' + escapeHtml(a.name || '') + '">' + (i + 1) + '</a>';
@@ -268,7 +269,7 @@ function docCSS(accent) {
 '.codeblock pre { margin: 0; padding: 13px 16px; overflow-x: auto; }\n' +
 '.codeblock code { background: none; border: none; padding: 0; color: #e6e9f2; font-size: 13px; }\n' +
 'figure.fig { margin: 20px 0 26px; }\n' +
-'.shot { position: relative; }\n' +
+'.shot { position: relative; container-type: inline-size; }\n' +
 '.shot img { width: 100%; display: block; border: 1px solid #dfe2ea; border-radius: 10px; box-shadow: 0 2px 10px rgba(15,20,40,.06); }\n' +
 '.pin { position: absolute; width: 24px; height: 24px; transform: translate(-50%,-50%); border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.4); text-decoration: none; }\n' +
 '.pin:hover { box-shadow: 0 0 0 3px rgba(' + rgb + ',.35), 0 1px 5px rgba(0,0,0,.4); }\n' +

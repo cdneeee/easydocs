@@ -54,6 +54,7 @@ function setAnnoZoom(scale, cx, cy) {
     stage.scrollTop += (nrect.top + relY * nrect.height) - cy;
   }
   updateAnnoZoomLabel();
+  resizeAnnoPins();
 }
 
 function renderAnnoPins() {
@@ -64,12 +65,28 @@ function renderAnnoPins() {
   });
 }
 
+/* Pins scale with the displayed image so they read the same fraction of it
+   at any zoom, matching the editor and exports (pinSize / 696 of the width). */
+function setAnnoPinPx(pin) {
+  var img = $('#annoImg');
+  var w = img.getBoundingClientRect().width;
+  var px = w ? w * annoState.pinSize / 696 : annoState.pinSize;
+  pin.style.width = px + 'px';
+  pin.style.height = px + 'px';
+  pin.style.fontSize = (px * 0.5) + 'px';
+}
+
+function resizeAnnoPins() {
+  if (!annoState) return;
+  $$('#annoPins .pin').forEach(setAnnoPinPx);
+}
+
 function annoPinEl(a, i) {
   var pin = el('span', 'pin big' + (annoState.selId === a.id ? ' sel' : ''), String(i + 1));
   pin.dataset.id = a.id;
   pin.style.left = a.x + '%';
   pin.style.top = a.y + '%';
-  applyPinSize(pin, annoState.pinSize);
+  setAnnoPinPx(pin);
   pin.addEventListener('pointerdown', function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
@@ -181,7 +198,7 @@ function initAnnotator() {
   $('#annoZoomOut').addEventListener('click', function () { setAnnoZoom(annoImgScale() / 1.25); });
   $('#annoZoomVal').addEventListener('click', function () { setAnnoZoom(1); });
   $('#annoZoomFit').addEventListener('click', function () { setAnnoZoom('fit'); });
-  $('#annoImg').addEventListener('load', updateAnnoZoomLabel);
+  $('#annoImg').addEventListener('load', function () { updateAnnoZoomLabel(); resizeAnnoPins(); });
   $('#annoStage').addEventListener('wheel', function (e) {
     if (!e.ctrlKey) return;
     e.preventDefault();

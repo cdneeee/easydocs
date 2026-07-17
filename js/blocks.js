@@ -233,10 +233,17 @@ function bodyTable(b, body) {
   body.appendChild(tools);
 }
 
+/* Pin diameter as a fraction of the image width, using container query
+   units, so a pin keeps the same size relative to the screenshot at any
+   display width. 24 maps to ~3.45% of the width, the same fraction the PDF
+   export draws. The host (.shot-ed) sets container-type: inline-size.
+   The annotator sizes its pins separately because its image scales freely
+   with zoom. */
 function applyPinSize(pin, size) {
-  pin.style.width = size + 'px';
-  pin.style.height = size + 'px';
-  pin.style.fontSize = Math.round(size * 0.5) + 'px';
+  var w = size * 100 / 696;
+  pin.style.width = w.toFixed(3) + 'cqw';
+  pin.style.height = w.toFixed(3) + 'cqw';
+  pin.style.fontSize = (w / 2).toFixed(3) + 'cqw';
 }
 
 function bodyImage(b, body) {
