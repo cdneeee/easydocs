@@ -23,17 +23,17 @@ Works offline. Can also run locally in any modern browser.
 
 ## Features
 
-|   | Feature | What it does |
-|---|---------|--------------|
-| ✍️ | **Block editor** | Text, headings, lists, code, callouts, tables, images, dividers |
-| ⚡ | **Fast input** | `/` block menu, Markdown shortcuts, smart Enter, drag to reorder |
-| 📌 | **Screenshot pins** | Drop numbered pins on images, name them, link them to pages |
-| 🔗 | **Pin references** | Inline chips in text that stay in sync and turn into jump links |
-| 🗂️ | **Structure** | Pages, sections, subsections, groups. Drag anything to reorder |
-| 📄 | **HTML export** | One self-contained file with sidebar nav and live search |
-| 🖨️ | **PDF export** | Cover page, contents with page numbers, pins drawn on figures |
-| 📥 | **Markdown import** | Turn Markdown into pages, or append it to a page |
-| 💾 | **Local and private** | Autosaves to your browser. `.json` backup. Nothing leaves your device |
+| Feature | What it does |
+|---------|--------------|
+| **Block editor** | Text, headings, lists, code, callouts, tables, images, dividers |
+| **Fast input** | `/` block menu, Markdown shortcuts, smart Enter, drag to reorder |
+| **Screenshot pins** | Drop numbered pins on images, name them, link them to pages |
+| **Pin references** | Inline chips in text that stay in sync and turn into jump links |
+| **Structure** | Pages, sections, subsections, groups. Drag anything to reorder |
+| **HTML export** | One self-contained file with sidebar nav and live search |
+| **PDF export** | Cover page, contents with page numbers, pins drawn on figures |
+| **Markdown import** | Turn Markdown into pages, or append it to a page |
+| **Local and private** | Autosaves to your browser. `.json` backup. Nothing leaves your device |
 
 ## Composing shortcuts
 
@@ -79,7 +79,7 @@ Static site, no build, no backend. Any static host works, and data stays in each
 **GitHub Pages:**
 
 1. Push this repo to GitHub.
-2. Open **Settings › Pages**.
+2. Open **Settings > Pages**.
 3. Source: **Deploy from a branch**, pick `main` and `/ (root)`.
 4. Open the URL it gives you.
 
